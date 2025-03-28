@@ -17,7 +17,7 @@ const Header = ({ isAuthenticated, setIsAuthenticated, cartItems }) => {
 
   return (
     <nav className="flex justify-between items-center bg-gradient-to-r from-blue-700 to-blue-500 py-4 shadow-lg w-full sticky top-0 z-50 relative">
-      {/* Навигацийн холбоосууд */}
+      {/* Навигатийн холбоосууд */}
       <div className="flex gap-6 items-center">
         <Link
           to="/home"
@@ -59,7 +59,7 @@ const Header = ({ isAuthenticated, setIsAuthenticated, cartItems }) => {
         {!isAuthenticated && (
           <button
             onClick={() => navigate("/signup")}
-            className="border border-white text-white py-2 px-4 rounded-md font-semibold transition duration-300 hover:bg-white hover:text-blue--700"
+            className="border border-white text-white py-2 px-4 rounded-md font-semibold transition duration-300 hover:bg-white hover:text-blue-700"
           >
             Sign Up
           </button>

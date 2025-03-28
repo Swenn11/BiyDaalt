@@ -14,28 +14,59 @@ import "./output.css";
 import "./App.css";
 
 const App = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")) || null);
   const [filters, setFilters] = useState({
     name: "",
     color: "",
     minPrice: "",
     maxPrice: "",
   });
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => JSON.parse(localStorage.getItem("cart")) || []);
 
-  const handleLogin = (userData) => setUser(userData);
+  // 🛠 **LocalStorage-д өгөгдөл хадгалах**
+  useEffect(() => {
+    localStorage.setItem("user", JSON.stringify(user));
+  }, [user]);
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData)); // Login хийгдсэн хэрэглэгчийг хадгалах
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+  };
+
   const handleFilterChange = (newFilters) => setFilters(newFilters);
-  const addToCart = (product) => setCartItems((prev) => [...prev, product]);
-  const removeFromCart = (index) => setCartItems(cartItems.filter((_, i) => i !== index));
+
+  const addToCart = (product) => {
+    setCartItems((prev) => {
+      const updatedCart = [...prev, { ...product, quantity: 1 }];
+      localStorage.setItem("cart", JSON.stringify(updatedCart)); // 🛒 **Сагсыг LocalStorage-д хадгалах**
+      return updatedCart;
+    });
+  };
+
+  const removeFromCart = (index) => {
+    setCartItems((prev) => {
+      const updatedCart = prev.filter((_, i) => i !== index);
+      localStorage.setItem("cart", JSON.stringify(updatedCart)); // 🗑 **Сагснаас устгах үед LocalStorage шинэчлэх**
+      return updatedCart;
+    });
+  };
 
   return (
     <Router>
-      <Header isAuthenticated={!!user} setIsAuthenticated={setUser} cartItems={cartItems.length} />
+      <Header isAuthenticated={!!user} setIsAuthenticated={setUser} cartItems={cartItems.length} onLogout={handleLogout} />
       <div className="container mx-auto px-6 py-10 bg-gray-100 rounded-lg shadow-lg">
         <Routes>
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          <Route path="/signup" element={<Signup />} /> {/* Signup хуудсыг орууллаа */}
-
+          <Route path="/signup" element={<Signup />} />
           <Route path="/cart" element={<Cart cartItems={cartItems} removeFromCart={removeFromCart} />} />
           <Route
             path="/market"
@@ -74,4 +105,3 @@ const MarketPage = ({ filters, addToCart, onFilterChange }) => (
 );
 
 export default App;
-
